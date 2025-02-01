@@ -5,6 +5,7 @@ import random
 from numpy.ma.core import filled
 
 BACKGROUND_COLOR = "#B1DDC6"
+current_card = {}
 
 try:
     data = pandas.read_csv("data/words_to_learn.csv")
@@ -14,7 +15,7 @@ except FileNotFoundError:
 else:
     to_learn = data.to_dict(orient="records")
 
-current_card = {}
+
 
 def next_card():
     global current_card, flip_timer

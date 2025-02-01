@@ -2,25 +2,39 @@ from tkinter import *
 import pandas
 import random
 
+from numpy.ma.core import filled
 
 BACKGROUND_COLOR = "#B1DDC6"
 
 data = pandas.read_csv("data/french_words.csv")
 to_learn = data.to_dict(orient="records")
+current_card = {}
 
 def next_card():
+    global current_card, flip_timer
+    window.after_cancel(flip_timer)
     current_card = random.choice(to_learn)
-    canvas.itemconfig(card_title, text= "French")
-    canvas.itemconfig(card_word, text= current_card['French'])
+    canvas.itemconfig(card_title, text= "French", fill="black")
+    canvas.itemconfig(card_word, text= current_card["French"], fill="black")
+    canvas.itemconfig(card_image, image= french_card)
+    flip_timer = window.after(3000, flip_side)
 
+
+def flip_side():
+    canvas.itemconfig(card_title, text="English", fill="white")
+    canvas.itemconfig(card_word, text= current_card['English'], fill="white")
+    canvas.itemconfig(card_image, image= english_card)
 
 window = Tk()
 window.title("Flashy")
 window.config(pady=50, padx=50, bg=BACKGROUND_COLOR)
 
+flip_timer = window.after(3000, flip_side)
+
 canvas = Canvas(width=800, height=526, bg=BACKGROUND_COLOR, highlightthickness= 0)
-image = PhotoImage(file="images/card_front.png")
-canvas.create_image(400,263, image= image)
+french_card = PhotoImage(file="images/card_front.png")
+english_card = PhotoImage(file="images/card_back.png")
+card_image = canvas.create_image(400,263, image= french_card)
 canvas.grid(row=0, column=0, columnspan= 2)
 
 card_title = canvas.create_text(400, 150, text="Title", font=("Ariel", 40, "italic"))

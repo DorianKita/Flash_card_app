@@ -6,8 +6,14 @@ from numpy.ma.core import filled
 
 BACKGROUND_COLOR = "#B1DDC6"
 
-data = pandas.read_csv("data/french_words.csv")
-to_learn = data.to_dict(orient="records")
+try:
+    data = pandas.read_csv("data/words_to_learn.csv")
+except FileNotFoundError:
+    data = pandas.read_csv("data/french_words.csv")
+    to_learn = data.to_dict(orient="records")
+else:
+    to_learn = data.to_dict(orient="records")
+
 current_card = {}
 
 def next_card():
@@ -24,6 +30,16 @@ def flip_side():
     canvas.itemconfig(card_title, text="English", fill="white")
     canvas.itemconfig(card_word, text= current_card['English'], fill="white")
     canvas.itemconfig(card_image, image= english_card)
+
+def right():
+   if current_card in to_learn:
+       to_learn.remove(current_card)
+
+   new_df = pandas.DataFrame(to_learn)
+   new_df.to_csv("data/words_to_learn.csv", index=False)
+   next_card()
+
+
 
 window = Tk()
 window.title("Flashy")
@@ -47,7 +63,7 @@ wrong_button.grid(row=1, column=0)
 
 right_image = PhotoImage(file="images/right.png")
 right_button = Button(image=right_image, highlightthickness=0, bg=BACKGROUND_COLOR, borderwidth= 0,
-                      command=next_card)
+                      command=right)
 right_button.grid(row=1, column=1)
 
 next_card()
